@@ -469,3 +469,18 @@ def lerp(u, v, t, decimal_place=1):
             "Instances u and v must be instances of Vector or Matrix class.")
 
     return interpolated
+
+
+# ex05 - angle_cos
+# be careful with decimal_place !!
+
+def angle_cos(u: Vector, v: Vector,  decimal_place=1):
+    dot = u.dot(v)
+    mag1 = u.norm()
+    mag2 = v.norm()
+
+    if mag1 == 0 or mag2 == 0:
+        return float('nan')  # Return NaN for zero vectors
+
+    cos_theta = dot / (mag1 * mag2)
+    return round(cos_theta, decimal_place) if decimal_place == 1 else cos_theta
