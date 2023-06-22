@@ -217,6 +217,9 @@ class Vector(Matrix):
             # print(len(data))
             self.shape = (len(self.data), 1)
 
+    def is_zero(self):
+        return all(element == 0 for element in self.data)
+
     def __len__(self):
         return len(self.data)
 
@@ -475,12 +478,16 @@ def lerp(u, v, t, decimal_place=1):
 # be careful with decimal_place !!
 
 def angle_cos(u: Vector, v: Vector,  decimal_place=1):
-    dot = u.dot(v)
+    if u.shape != v.shape:
+        raise ValueError("Vectors must have the same size")
+
     mag1 = u.norm()
     mag2 = v.norm()
 
     if mag1 == 0 or mag2 == 0:
-        return float('nan')  # Return NaN for zero vectors
+        raise ValueError("One or both vectors are zero")
+
+    dot = u.dot(v)
 
     cos_theta = dot / (mag1 * mag2)
     return round(cos_theta, decimal_place) if decimal_place == 1 else cos_theta
