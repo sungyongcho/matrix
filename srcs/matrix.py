@@ -491,3 +491,18 @@ def angle_cos(u: Vector, v: Vector,  decimal_place=1):
 
     cos_theta = dot / (mag1 * mag2)
     return round(cos_theta, decimal_place) if decimal_place == 1 else cos_theta
+
+
+# ex06 - cross_product
+
+def cross_product(u: Vector, v: Vector):
+    print(u.shape, v.shape)
+    if u.shape[0] != 3 or v.shape[0] != 3:
+        raise ValueError("Both vectors must be 3-dimensional")
+    print(u[0][0])
+    cross = [u[1][0] * v[2][0] - u[2][0] * v[1][0],
+             u[2][0] * v[0][0] - u[0][0] * v[2][0],
+             u[0][0] * v[1][0] - u[1][0] * v[0][0]]
+    nested_cross = [[x] for x in cross]
+
+    return Vector(nested_cross)
