@@ -106,6 +106,7 @@ class Matrix:
     def __rtruediv__(self, var):
         raise NotImplementedError("rtruediv not implemented")
 
+    # ex07 -- already implemented
     def __mul__(self, var):
         # print(type(var))
         if any(isinstance(var, scalar_type) for scalar_type in [int, float, complex]):
