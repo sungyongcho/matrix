@@ -1,6 +1,5 @@
 
 import operator
-
 ops = {"+": operator.add,
        "-": operator.sub,
        "*": operator.mul,
@@ -254,6 +253,7 @@ class Vector(Matrix):
         else:
             return self._T_col_to_row()
 
+    # ex03 - alerady implemented
     def dot(self, other):
         if not isinstance(other, Vector):
             raise TypeError("unsupported operand type(s) for dot product: '{}' and '{}'".format(
@@ -363,6 +363,25 @@ class Vector(Matrix):
             return result
         else:
             raise TypeError("Unsupported operand types for multiplication")
+
+    # ex04 - norm_1(), norm(), norm_inf()
+    def norm_1(self):
+        ret = 0
+        for i in range(0, max(self.shape)):
+            ret += (self.data[i][0] if self.data[i]
+                    [0] > 0 else self.data[i][0] * -1)
+        return ret
+
+    def norm(self):
+        ret = 0
+        for i in range(0, max(self.shape)):
+            ret += (self.data[i][0] ** 2)
+        return ret ** (1/2)
+
+    def norm_inf(self):
+        flatten_list = [item for sublist in self.data for item in sublist]
+        absolute_list = [(x if x > 0 else x * -1) for x in flatten_list]
+        return max(absolute_list)
 
 
 def create_zero_vectors(num_vectors):
