@@ -166,6 +166,18 @@ class Matrix:
         # as it is already implemented in __mul__
         return self.__mul__(number)
 
+    # ex10 - trace
+    def trace(self):
+        if self.shape[0] != self.shape[1]:
+            raise ValueError(
+                "The matrix must be square for calculating the trace")
+
+        trace_sum = 0
+        for i in range(self.shape[0]):
+            trace_sum += self.data[i][i]
+
+        return trace_sum
+
 
 class Vector(Matrix):
 
