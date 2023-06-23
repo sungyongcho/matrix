@@ -216,9 +216,54 @@ class Matrix:
     # ex11 - determinant
     # https://www.geeksforgeeks.org/determinant-of-a-matrix/
     # watch 3b1b video
+
+    ## recursive way - time complexity is O(n!) so it doesnt match
+    # def determinant(self):
+    #     if self.shape[0] != self.shape[1]:
+    #         raise ValueError('Matrix must be square to calculate determinant.')
+
+    #     if self.shape[0] == 1 and self.shape[1] == 1:
+    #         return self.data[0][0]
+
+    #     matrix = self.data
+    #     det = 0
+    #     for c in range(self.shape[1]):
+    #         submatrix = [row[0:c] + row[c+1:] for row in matrix[1:]]
+    #         coefficient = (-1) ** (1 + c)  # Alternating sign
+    #         det += coefficient * matrix[0][c] * Matrix(submatrix).determinant()
+
+    #     return det
+
+    def _lu_decomposition(self):
+        n = self.shape[0]
+        L = create_identity_matrix(n)
+        U = create_zero_matrix(n, n)
+        matrix = self.data
+
+        for i in range(n):
+            U[i][i] = matrix[i][i]
+
+            for j in range(i + 1, n):
+                L[j][i] = matrix[j][i] / U[i][i]
+                U[i][j] = matrix[i][j]
+
+            for j in range(i + 1, n):
+                for k in range(i + 1, n):
+                    matrix[j][k] = matrix[j][k] - L[j][i] * U[i][k]
+
+        return L, U
+
     def determinant(self):
-        if self.shape[0] != self.shape[1]:
-            raise ValueError('Matrix must be square to calculate determinant.')
+        n = self.shape[0]
+        L, U = self._lu_decomposition()
+
+        det = 1
+
+        for i in range(n):
+            det = det * U[i][i]
+
+        return det
+
 
 
 class Vector(Matrix):
@@ -451,6 +496,12 @@ def create_zero_vectors(num_vectors):
 def create_zero_matrix(rows, columns):
     zero_matrix = [[0.0] * columns for _ in range(rows)]
     return zero_matrix
+
+def create_identity_matrix(size):
+    identity_matrix = [[0.0] * size for _ in range(size)]
+    for i in range(size):
+        identity_matrix[i][i] = 1.0
+    return identity_matrix
 
 # ex01 - linear combination
 
