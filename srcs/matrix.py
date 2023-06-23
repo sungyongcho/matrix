@@ -148,7 +148,7 @@ class Matrix:
         return self * x
 
     # ref: https://stackoverflow.com/questions/21444338/transpose-nested-list-in-python
-
+    # ex09 - transpose; already implemented
     def T(self):
         return Matrix(list(map(list, zip(*self.data))))
 
