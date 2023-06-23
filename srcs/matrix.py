@@ -488,6 +488,7 @@ def lerp(u, v, t, decimal_place=1):
 
 
 # ex05 - angle_cos
+# ref: https://www.geeksforgeeks.org/angle-between-two-vectors-formula/
 # be careful with decimal_place !!
 
 def angle_cos(u: Vector, v: Vector,  decimal_place=1):
