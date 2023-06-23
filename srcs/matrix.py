@@ -184,41 +184,32 @@ class Matrix:
     def row_echelon(self):
         matrix = self.data
 
+        row_count = self.shape[0]
+        col_count = self.shape[1]
         lead = 0
-        rowCount = len(matrix)
-        columnCount = len(matrix[0])
-
-        for r in range(rowCount):
-            if lead >= columnCount:
+        for r in range(row_count):
+            if lead >= col_count:
                 return
 
-            i = r
-            while matrix[i][lead] == 0:
-                i += 1
-                if i == rowCount:
-                    i = r
-                    lead += 1
-                    if columnCount == lead:
-                        return
+            while matrix[r][lead] == 0:
+                lead += 1
+                if lead >= col_count:
+                    return Matrix(matrix)
 
-            matrix[i], matrix[r] = matrix[r], matrix[i]
+            for i in range(r + 1, row_count):
+                if matrix[i][lead] != 0:
+                    matrix[r], matrix[i] = matrix[i], matrix[r]
+                    break
 
-            lv = matrix[r][lead]
-            matrix[r] = [mrx / float(lv) for mrx in matrix[r]]
+            divisior = matrix[r][lead]
+            matrix[r] = [elem / divisior for elem in matrix[r]]
 
-            for i in range(rowCount):
+            for i in range(row_count):
                 if i != r:
-                    lv = matrix[i][lead]
-                    matrix[i] = [iv - lv * rv for rv,
-                                 iv in zip(matrix[r], matrix[i])]
-
+                    multiplier = matrix[i][lead]
+                    matrix[i] = [elem - multiplier * matrix[r][j]
+                                 for j, elem in enumerate(matrix[i])]
             lead += 1
-
-        # Force values close to zero to be exactly zero
-        for i in range(rowCount):
-            for j in range(columnCount):
-                if abs(matrix[i][j]) < 1e-10:
-                    matrix[i][j] = 0.0
 
         return Matrix(matrix)
 
