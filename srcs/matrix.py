@@ -148,7 +148,7 @@ class Matrix:
         return self * x
 
     # ref: https://stackoverflow.com/questions/21444338/transpose-nested-list-in-python
-    # ex09 - transpose; already implemented
+    # ex08 - transpose; already implemented
     def T(self):
         return Matrix(list(map(list, zip(*self.data))))
 
@@ -166,7 +166,7 @@ class Matrix:
         # as it is already implemented in __mul__
         return self.__mul__(number)
 
-    # ex10 - trace
+    # ex09 - trace
     def trace(self):
         if self.shape[0] != self.shape[1]:
             raise ValueError(
@@ -177,6 +177,50 @@ class Matrix:
             trace_sum += self.data[i][i]
 
         return trace_sum
+
+    # ex10 - reduced row-echelon form
+    # read: gaussian elemination
+    # https://rosettacode.org/wiki/Reduced_row_echelon_form
+    def row_echelon(self):
+        matrix = self.data
+
+        lead = 0
+        rowCount = len(matrix)
+        columnCount = len(matrix[0])
+
+        for r in range(rowCount):
+            if lead >= columnCount:
+                return
+
+            i = r
+            while matrix[i][lead] == 0:
+                i += 1
+                if i == rowCount:
+                    i = r
+                    lead += 1
+                    if columnCount == lead:
+                        return
+
+            matrix[i], matrix[r] = matrix[r], matrix[i]
+
+            lv = matrix[r][lead]
+            matrix[r] = [mrx / float(lv) for mrx in matrix[r]]
+
+            for i in range(rowCount):
+                if i != r:
+                    lv = matrix[i][lead]
+                    matrix[i] = [iv - lv * rv for rv,
+                                 iv in zip(matrix[r], matrix[i])]
+
+            lead += 1
+
+        # Force values close to zero to be exactly zero
+        for i in range(rowCount):
+            for j in range(columnCount):
+                if abs(matrix[i][j]) < 1e-10:
+                    matrix[i][j] = 0.0
+
+        return Matrix(matrix)
 
 
 class Vector(Matrix):
