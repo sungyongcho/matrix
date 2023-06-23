@@ -213,6 +213,13 @@ class Matrix:
 
         return Matrix(matrix)
 
+    # ex11 - determinant
+    # https://www.geeksforgeeks.org/determinant-of-a-matrix/
+    # watch 3b1b video
+    def determinant(self):
+        if self.shape[0] != self.shape[1]:
+            raise ValueError('Matrix must be square to calculate determinant.')
+
 
 class Vector(Matrix):
 
