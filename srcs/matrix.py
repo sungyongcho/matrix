@@ -194,12 +194,12 @@ class Matrix:
         col_count = self.shape[1]
         lead = 0
         for r in range(row_count):
-            if lead >= col_count:
-                return
+            if lead >= col_count or r >= row_count:
+                return Matrix(matrix)
 
             while matrix[r][lead] == 0:
                 lead += 1
-                if lead >= col_count:
+                if lead >= col_count or r >= row_count:
                     return Matrix(matrix)
 
             for i in range(r + 1, row_count):
@@ -343,6 +343,19 @@ class Matrix:
                 result[j][i] = self._back_substitution(U, y)[j]
 
         return Matrix(result)
+
+    # ex13 - rank
+
+    def _count_nonzero_rows(self, matrix):
+        nonzero_count = 0
+        for row in matrix:
+            if any(element != 0 for element in row):
+                nonzero_count += 1
+        return nonzero_count
+
+    def rank(self):
+        rref_matrix = self.row_echelon()
+        return self._count_nonzero_rows(rref_matrix)
 
 
 class Vector(Matrix):
