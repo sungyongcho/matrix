@@ -1,5 +1,6 @@
 
 import operator
+
 ops = {"+": operator.add,
        "-": operator.sub,
        "*": operator.mul,
@@ -132,17 +133,22 @@ class Matrix:
             raise TypeError("Invalid type of input value.")
 
     def dot(self, other):
-        if not isinstance(other, Vector):
+        if isinstance(other, Vector):
+            other = Matrix([other]).T()
+        if not isinstance(other, Matrix):
             raise TypeError(
                 "unsupported operand type(s) for +: '{}' and '{}'".format(type(self), type(other)))
         if self.shape[1] != other.shape[0]:
-            raise TypeError(
-                "Invalid input: dot product requires a Vector of compatible shape.")
-        result = 0.0
+            raise ValueError(
+                "Matrices cannot be multiplied, dimensions don't match.")
+
+        result = create_zero_matrix(self.shape[0], other.shape[1])
         for i in range(self.shape[0]):
-            for j in range(self.shape[1]):
-                result += self.data[i][j] * other.data[j][i]
-        return result
+            for j in range(other.shape[1]):
+                for k in range(self.shape[1]):
+                    result[i][j] += self.data[i][k] * other.data[k][j]
+
+        return Matrix(result)
 
     def __rmul__(self, x):
         return self * x
@@ -235,7 +241,7 @@ class Matrix:
 
     #     return det
 
-    def plu_algorithm(self):
+    def _plu_decomposition(self):
         n = self.shape[0]
 
         P = create_identity_matrix(n)
@@ -266,7 +272,7 @@ class Matrix:
         return P, L, U, number_of_permutations
 
     def determinant(self):
-        P, L, U, number_of_permutations = self.plu_algorithm()
+        P, L, U, number_of_permutations = self._plu_decomposition()
         diagonal_product = 1
         for i in range(len(U)):
             diagonal_product *= U[i][i]
@@ -274,6 +280,69 @@ class Matrix:
             return diagonal_product
         else:
             return -diagonal_product
+
+    def _forward_substitution(self, L, b):
+
+        if isinstance(b, Matrix):
+            b = [item for sublist in b for item in sublist]
+        n = len(L)
+        y = create_zero_matrix(n, n)
+
+        # Here we perform the forward-substitution.
+        # Initializing with the first row.
+        y[0] = b[0] / L[0][0]
+
+        # Looping over rows in reverse (from the bottom up),
+        # starting with the second to last row, because the
+        # last row solve was completed in the last step.
+        for i in range(1, n):
+            sum_terms = 0.0
+            for j in range(i):
+                sum_terms += L[i][j] * y[j]
+            y[i] = (b[i] - sum_terms) / L[i][i]
+
+        return y
+
+    def _back_substitution(self, U, y):
+        n = len(U)
+
+        # Allocating space for the solution vector
+        x = create_zero_matrix(n, n)
+
+        # Here we perform the back-substitution.
+        # Initializing with the last row.
+        x[-1] = y[-1] / U[-1][-1]
+
+        # Looping over rows in reverse (from the bottom up),
+        # starting with the second to last row, because the
+        # last row solve was completed in the last step.
+        for i in range(n - 2, -1, -1):
+            sum_terms = 0.0
+            for j in range(i + 1, n):
+                sum_terms += U[i][j] * x[j]
+            x[i] = (y[i] - sum_terms) / U[i][i]
+
+        return x
+
+    # ex12 - Inverse
+    # also using PLU decompostion
+    # this is gold
+    # https://johnfoster.pge.utexas.edu/numerical-methods-book/LinearAlgebra_LU.html#Solving-for-the-inverse-of-$\mathbf-A$-with-the-$\mathbf{LU}$-decomposition
+    def inverse(self):
+
+        n = self.shape[0]
+
+        b = create_identity_matrix(n)
+        result = create_zero_matrix(n, n)
+
+        P, L, U, number_of_permutation = self._plu_decomposition()
+
+        for i in range(n):
+            y = self._forward_substitution(L, Matrix(P).dot(Vector(b[i])))
+            for j in range(n):
+                result[j][i] = self._back_substitution(U, y)[j]
+
+        return Matrix(result)
 
 
 class Vector(Matrix):
