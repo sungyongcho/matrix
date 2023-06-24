@@ -214,10 +214,11 @@ class Matrix:
         return Matrix(matrix)
 
     # ex11 - determinant
-    # https://www.geeksforgeeks.org/determinant-of-a-matrix/
+    # 1 *IMPORTANT*. https://johnfoster.pge.utexas.edu/numerical-methods-book/LinearAlgebra_LU.html
+    # 2. https://www.geeksforgeeks.org/determinant-of-a-matrix/
     # watch 3b1b video
 
-    ## recursive way - time complexity is O(n!) so it doesnt match
+    # recursive way - time complexity is O(n!) so it doesnt match
     # def determinant(self):
     #     if self.shape[0] != self.shape[1]:
     #         raise ValueError('Matrix must be square to calculate determinant.')
@@ -234,36 +235,45 @@ class Matrix:
 
     #     return det
 
-    def _lu_decomposition(self):
+    def plu_algorithm(self):
         n = self.shape[0]
+
+        P = create_identity_matrix(n)
         L = create_identity_matrix(n)
-        U = create_zero_matrix(n, n)
-        matrix = self.data
+        U = self.data
 
+        number_of_permutations = 0
+        # Loop over rows
         for i in range(n):
-            U[i][i] = matrix[i][i]
+            # Permute rows if needed
+            for k in range(i, n):
+                if U[i][i] != 0.0:
+                    break
+                if k + 1 < n:
+                    U[i], U[k + 1] = U[k + 1], U[i]
+                    P[i], P[k + 1] = P[k + 1], P[i]
+                number_of_permutations += 1
 
+            # Eliminate entries below i with row operations on U
+            # and reverse the row operations to manipulate L
             for j in range(i + 1, n):
-                L[j][i] = matrix[j][i] / U[i][i]
-                U[i][j] = matrix[i][j]
+                factor = U[j][i] / U[i][i]
+                # print(factor)
+                L[j][i] = factor
+                for k in range(i, n):
+                    U[j][k] -= factor * U[i][k]
 
-            for j in range(i + 1, n):
-                for k in range(i + 1, n):
-                    matrix[j][k] = matrix[j][k] - L[j][i] * U[i][k]
-
-        return L, U
+        return P, L, U, number_of_permutations
 
     def determinant(self):
-        n = self.shape[0]
-        L, U = self._lu_decomposition()
-
-        det = 1
-
-        for i in range(n):
-            det = det * U[i][i]
-
-        return det
-
+        P, L, U, number_of_permutations = self.plu_algorithm()
+        diagonal_product = 1
+        for i in range(len(U)):
+            diagonal_product *= U[i][i]
+        if number_of_permutations % 2 == 0:
+            return diagonal_product
+        else:
+            return -diagonal_product
 
 
 class Vector(Matrix):
@@ -496,6 +506,7 @@ def create_zero_vectors(num_vectors):
 def create_zero_matrix(rows, columns):
     zero_matrix = [[0.0] * columns for _ in range(rows)]
     return zero_matrix
+
 
 def create_identity_matrix(size):
     identity_matrix = [[0.0] * size for _ in range(size)]
