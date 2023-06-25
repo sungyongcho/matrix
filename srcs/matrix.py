@@ -536,30 +536,29 @@ class Vector(Matrix):
         raise NotImplementedError(
             "Division of a scalar by a Vector is not implemented here.")
 
-    def __mul__(self, other):
-        if isinstance(other, (int, float)):
-            # Multiply each element of the vector by a scalar
-            result = Vector([[element * other] for element in self])
-            return result
-        elif isinstance(other, Vector):
-            # Multiply two vectors element-wise
-            if len(self) != len(other):
+    def __mul__(self, var):
+        if isinstance(var, Matrix):
+            if self.shape[1] != var.shape[0]:
                 raise ValueError(
-                    "Vectors must have the same length for element-wise multiplication")
-            result = Vector([[a * b] for a, b in zip(self, other)])
-            return result
-        elif isinstance(other, Matrix):
-            # Multiply a vector by a matrix
-            if self.shape[1] != other.shape[0]:
+                    "Matrices cannot be multiplied, dimensions don't match.")
+            result = [[sum([self.data[i][k] * var.data[k][j] for k in range(self.shape[1])])
+                       for j in range(var.shape[1])] for i in range(self.shape[0])]
+            return Matrix(result)
+        elif isinstance(var, Vector):
+            if self.shape[1] != var.shape[0]:
                 raise ValueError(
-                    "Matrix column count must match vector row count for multiplication")
-            result = Matrix([[sum(a * b for a, b in zip(row, self))]
-                            for row in other])
-            return result
+                    "Matrix and vector dimensions don't match for multiplication.")
+            result = [sum([self.data[i][j] * var.data[j][0]
+                          for j in range(self.shape[1])]) for i in range(self.shape[0])]
+            return Vector([result])
+        elif any(isinstance(var, scalar_type) for scalar_type in [int, float, complex]):
+            result = [
+                [self.data[i][j] * var for j in range(self.shape[1])] for i in range(self.shape[0])]
+            return Matrix(result)
         else:
-            raise TypeError("Unsupported operand types for multiplication")
-
+            raise TypeError("Invalid type of input value.")
     # ex04 - norm_1(), norm(), norm_inf()
+
     def norm_1(self):
         ret = 0
         for i in range(0, max(self.shape)):
