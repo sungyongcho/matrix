@@ -465,7 +465,7 @@ class Vector(Matrix):
         return result
 
     def __add__(self, other):
-        if not isinstance(other, Vector):
+        if not (isinstance(other, Vector) or isinstance(other, Matrix)):
             raise TypeError("only vector can add to each other")
         if (self.shape != other.shape):
             raise ValueError("only vector of same shape is allowed")
@@ -562,8 +562,7 @@ class Vector(Matrix):
     def norm_1(self):
         ret = 0
         for i in range(0, max(self.shape)):
-            ret += (self.data[i][0] if self.data[i]
-                    [0] > 0 else self.data[i][0] * -1)
+            ret += abs(self.data[i][0])
         return ret
 
     def norm(self):
@@ -574,7 +573,7 @@ class Vector(Matrix):
 
     def norm_inf(self):
         flatten_list = [item for sublist in self.data for item in sublist]
-        absolute_list = [(x if x > 0 else x * -1) for x in flatten_list]
+        absolute_list = [abs(x) for x in flatten_list]
         return max(absolute_list)
 
 
@@ -623,6 +622,12 @@ def linear_combination(sets, coeffs):
 # be careful with decimal_place !!
 
 
+def _complex_round(num, decimal_place):
+    real_part = round(num.real, decimal_place)
+    imag_part = round(num.imag, decimal_place)
+    return complex(real_part, imag_part)
+
+
 def lerp(u, v, t, decimal_place=1):
     if isinstance(u, Vector):
         if not isinstance(v, Vector):
@@ -645,17 +650,19 @@ def lerp(u, v, t, decimal_place=1):
     elif t == 1:
         return v
 
-    if isinstance(u, (int, float, complex)):
+    if isinstance(u, (int, float)):
         return round((1 - t) * u + t * v, decimal_place)
-    # Perform linear interpolation between u and v
+    elif isinstance(u, complex):
+        return _complex_round((1 - t) * u + t * v, decimal_place)
     elif isinstance(u, Vector):
         if u.shape != v.shape:
             raise ValueError(
                 "Vectors must have the same shape, but received vectors of different shapes.")
         interpolated = Vector(create_zero_vectors(u.shape[0]))
         for i in range(u.shape[0]):
-            interpolated[i] = round(
+            interpolated[i] = _complex_round(
                 (1 - t) * u[i][0] + t * v[i][0], decimal_place)
+        return interpolated
     elif isinstance(u, Matrix):
         if u.shape != v.shape:
             raise ValueError(
@@ -665,18 +672,17 @@ def lerp(u, v, t, decimal_place=1):
         for i in range(num_rows):
             for j in range(num_cols):
                 interpolated[i][j] = (1 - t) * u[i][j] + t * v[i][j]
+        return interpolated
     else:
         raise TypeError(
             "Instances u and v must be instances of Vector or Matrix class.")
-
-    return interpolated
 
 
 # ex05 - angle_cos
 # ref: https://www.geeksforgeeks.org/angle-between-two-vectors-formula/
 # be careful with decimal_place !!
 
-def angle_cos(u: Vector, v: Vector,  decimal_place=1):
+def angle_cos(u: Vector, v: Vector, decimal_place=1):
     if u.shape != v.shape:
         raise ValueError("Vectors must have the same size")
 
@@ -684,15 +690,16 @@ def angle_cos(u: Vector, v: Vector,  decimal_place=1):
     mag2 = v.norm()
 
     if mag1 == 0 or mag2 == 0:
-        raise ValueError("One or both vectors are zero")
+        raise ValueError("One or both vectors have zero norm")
 
     dot = u.dot(v)
 
     cos_theta = dot / (mag1 * mag2)
+    if isinstance(cos_theta, complex):
+        cos_theta = cos_theta.real  # Get the real part of the complex number
     return round(cos_theta, decimal_place) if decimal_place == 1 else cos_theta
-
-
 # ex06 - cross_product
+
 
 def cross_product(u: Vector, v: Vector):
     print(u.shape, v.shape)
