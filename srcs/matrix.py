@@ -629,6 +629,9 @@ def _complex_round(num, decimal_place):
 
 
 def lerp(u, v, t, decimal_place=1):
+    if not isinstance(t, (int, float)) or not 0 <= t <= 1:
+        raise ValueError("Parameter t must be a scalar between 0 and 1.")
+
     if isinstance(u, Vector):
         if not isinstance(v, Vector):
             raise TypeError(
@@ -656,8 +659,7 @@ def lerp(u, v, t, decimal_place=1):
         return _complex_round((1 - t) * u + t * v, decimal_place)
     elif isinstance(u, Vector):
         if u.shape != v.shape:
-            raise ValueError(
-                "Vectors must have the same shape, but received vectors of different shapes.")
+            raise ValueError("Vectors must have the same shape.")
         interpolated = Vector(create_zero_vectors(u.shape[0]))
         for i in range(u.shape[0]):
             interpolated[i] = _complex_round(
@@ -665,8 +667,7 @@ def lerp(u, v, t, decimal_place=1):
         return interpolated
     elif isinstance(u, Matrix):
         if u.shape != v.shape:
-            raise ValueError(
-                "Matrices must have the same shape, but received matrices of different shapes.")
+            raise ValueError("Matrices must have the same shape.")
         num_rows, num_cols = u.shape[0], u.shape[1]
         interpolated = Matrix(create_zero_matrix(num_rows, num_cols))
         for i in range(num_rows):
