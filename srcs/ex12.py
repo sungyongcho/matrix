@@ -25,6 +25,7 @@ u = Matrix([[8., 5., -2.],
 # [0.143678161, 0.074712644, -0.206896552
 print(u.inverse())
 
+# check with numpy implementaion
 print(np.linalg.inv([[8., 5., -2.],
                      [4., 7., 20.],
                      [7., 6., 1.]]))
