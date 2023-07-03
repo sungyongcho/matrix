@@ -622,10 +622,10 @@ def linear_combination(sets, coeffs):
 # be careful with decimal_place !!
 
 
-def _complex_round(num, decimal_place):
-    real_part = round(num.real, decimal_place)
-    imag_part = round(num.imag, decimal_place)
-    return complex(real_part, imag_part)
+def _complex_round(number, decimal_place):
+    if number.imag == 0:
+        return round(number.real, decimal_place)
+    return round(number.real, decimal_place) + round(number.imag, decimal_place) * 1j
 
 
 def lerp(u, v, t, decimal_place=1):
