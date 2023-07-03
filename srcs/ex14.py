@@ -28,7 +28,7 @@ def projection(fov, ratio, near, far):
 
 
 if __name__ == "__main__":
-    fov = 45.0  # Field-of-view in degrees
+    fov = 100.0  # Field-of-view in degrees
     ratio = 4 / 3  # Window size ratio (width / height)
     near = 1.0  # Distance of the near plane
     far = 50.0  # Distance of the far plane
