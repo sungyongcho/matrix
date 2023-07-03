@@ -703,10 +703,10 @@ def angle_cos(u: Vector, v: Vector, decimal_place=1):
 
 
 def cross_product(u: Vector, v: Vector):
-    print(u.shape, v.shape)
+    # print(u.shape, v.shape)
     if u.shape[0] != 3 or v.shape[0] != 3:
         raise ValueError("Both vectors must be 3-dimensional")
-    print(u[0][0])
+    # print(u[0][0])
     cross = [u[1][0] * v[2][0] - u[2][0] * v[1][0],
              u[2][0] * v[0][0] - u[0][0] * v[2][0],
              u[0][0] * v[1][0] - u[1][0] * v[0][0]]
