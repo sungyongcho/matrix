@@ -11,3 +11,4 @@ v2 = Vector([[0.], [10.], [-100.]])
 
 
 print(linear_combination([e1, e2, e3], [10., -2., 0.5]))
+print(linear_combination([v1, v2], [10., -2.]))

@@ -612,7 +612,7 @@ def linear_combination(sets, coeffs):
     if len(sets) != len(coeffs):
         raise ValueError("Number of sets and coefficients must match.")
 
-    ret = Vector(create_zero_vectors(len(sets)))
+    ret = Vector(create_zero_vectors(len(sets[0])))
     for i in range(len(sets)):
         ret += coeffs[i] * sets[i]
 
