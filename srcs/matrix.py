@@ -260,11 +260,14 @@ class Matrix:
                     P[i], P[k + 1] = P[k + 1], P[i]
                 number_of_permutations += 1
 
+            # Check if U[i][i] is zero
+            if U[i][i] == 0.0:
+                continue
+
             # Eliminate entries below i with row operations on U
             # and reverse the row operations to manipulate L
             for j in range(i + 1, n):
                 factor = U[j][i] / U[i][i]
-                # print(factor)
                 L[j][i] = factor
                 for k in range(i, n):
                     U[j][k] -= factor * U[i][k]
@@ -277,8 +280,12 @@ class Matrix:
         for i in range(len(U)):
             diagonal_product *= U[i][i]
         if number_of_permutations % 2 == 0:
+            if diagonal_product == -0.0:
+                return 0.0
             return diagonal_product
         else:
+            if diagonal_product == -0.0:
+                return 0.0
             return -diagonal_product
 
     def _forward_substitution(self, L, b):
