@@ -42,3 +42,26 @@ v = Matrix([[2., 1.], [4., 2.]])
 # [-14., 7.]
 # [44., 22.]
 print(u*v)
+
+print("=======eval===========")
+u = Matrix([[0., 0.], [0., 0.]])
+v = Vector([[3.], [8.]])
+print(u*v)
+
+u = Matrix([[1., 0.], [0., 1.]])
+v = Vector([[3.], [8.]])
+print(u*v)
+
+u = Matrix([[1., 1.], [1., 1.]])
+v = Vector([[4.], [2.]])
+print(u*v)
+
+u = Matrix([[2., 0.], [0., 2.]])
+v = Vector([[2.], [1.]])
+print(u*v)
+
+u = Matrix([[.5, 0.], [0, .5]])
+v = Vector([[4.], [2.]])
+print(u*v)
+
+print("=======eval===========")
